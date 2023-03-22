@@ -85,7 +85,10 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
                     logging.info(NAMESPACE, 'Retrieved books: ', results);
 
                     return res.status(200).json({
-                        results
+                        code: 200,
+                        success: true,
+                        message: 'Berhasil Mendapatkan Semua Buku.',
+                        data: results
                     });
                 })
                 .catch((error) => {
