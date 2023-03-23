@@ -21,6 +21,50 @@ function isValidData(data: IBook): boolean {
     return true;
 }
 
+const showBook = async (req: Request, res: Response, next: NextFunction) => {
+    logging.info(NAMESPACE, 'Getting book by id.');
+
+    const id = req.params.id;
+
+    let query = `SELECT * FROM ${NAMESPACE} WHERE id = ${id}`;
+
+    Connect()
+        .then((connection) => {
+            Query(connection, query)
+                .then((results) => {
+                    logging.info(NAMESPACE, 'Book found: ', results);
+
+                    return res.status(200).json({
+                        code: 200,
+                        success: true,
+                        message: 'Berhasil Mendapatkan Buku.',
+                        data: results
+                    });
+                })
+                .catch((error) => {
+                    logging.error(NAMESPACE, error.message, error);
+
+                    return res.status(200).json({
+                        message: error.message,
+                        error
+                    });
+                })
+                .finally(() => {
+                    logging.info(NAMESPACE, 'Closing connection.');
+
+                    connection.end();
+                });
+        })
+        .catch((error) => {
+            logging.error(NAMESPACE, error.message, error);
+
+            return res.status(200).json({
+                message: error.message,
+                error
+            });
+        });
+};
+
 const updateBook = async (req: Request, res: Response, next: NextFunction) => {
     logging.info(NAMESPACE, 'Updating books');
 
@@ -76,11 +120,11 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
-    logging.info(NAMESPACE, 'Inserting books from array');
+    logging.info(NAMESPACE, 'Creating book.');
 
-    const data: IBook[] = req.body;
+    const data: IBook = req.body;
 
-    if (data.length == 0) {
+    if (!isValidData(data)) {
         return res.status(200).json({
             code: 400,
             success: false,
@@ -89,27 +133,7 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
         });
     }
 
-    let query = `INSERT INTO ${NAMESPACE} (author, title, tahun_dibuat, tahun_diterbitkan) VALUES `;
-    let values = '';
-
-    data.forEach((book, index) => {
-        if (!isValidData(book)) {
-            return res.status(200).json({
-                code: 400,
-                success: false,
-                message: 'Data yang anda masukkan tidak valid.',
-                data: []
-            });
-        }
-
-        if (index == data.length - 1) {
-            values += `("${book.author}", "${book.title}", "${book.tahun.dibuat}", "${book.tahun.diterbitkan}")`;
-        } else {
-            values += `("${book.author}", "${book.title}", "${book.tahun.dibuat}", "${book.tahun.diterbitkan}"), `;
-        }
-    });
-
-    query += values;
+    let query = `INSERT INTO ${NAMESPACE} (author, title, tahun_dibuat, tahun_diterbitkan) VALUES ("${data.author}", "${data.title}", "${data.tahun.dibuat}", "${data.tahun.diterbitkan}")`;
 
     Connect()
         .then((connection) => {
@@ -119,7 +143,9 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
 
                     return res.status(200).json({
                         code: 200,
-                        success: true
+                        success: true,
+                        message: 'Berhasil Membuat Buku.',
+                        data: []
                     });
                 })
                 .catch((error) => {
@@ -187,4 +213,4 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-export default { createBook, getAllBooks, updateBook };
+export default { createBook, getAllBooks, updateBook, showBook };
