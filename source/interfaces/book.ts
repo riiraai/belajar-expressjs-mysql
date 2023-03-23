@@ -1,6 +1,4 @@
-import { Request, Response } from 'express';
-
-interface IBook {
+export interface IBook {
     id: number;
     author: string;
     title: string;
@@ -9,5 +7,3 @@ interface IBook {
         diterbitkan: number;
     };
 }
-
-export default IBook;
