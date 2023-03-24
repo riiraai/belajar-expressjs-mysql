@@ -30,7 +30,7 @@ const uploadBooks = (req: Request, res: Response, next: NextFunction) => {
             logging.info(NAMESPACE, 'File uploaded successfully.');
 
             return res.status(200).json({
-                code: 201,
+                code: 200,
                 success: true,
                 message: 'File uploaded successfully.',
                 data: req.file
