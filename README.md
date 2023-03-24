@@ -1,5 +1,5 @@
-# Documentation API belajar-expressjs-mysql
-Simple Crud Book 
+# 📘 Documentation API belajar-expressjs-mysql
+Backend - Simple Crud Book with expressjs and mysql
 | No  | API Route Books             | Method | Description       | Request                                                | Response                  |
 | --- | --------------------------- | ------ | ----------------- | ------------------------------------------------------ | ------------------------- |
 | 1.  | {url}/books/get/books       | GET    | Get all books     | -                                                      | Status 200, Get All Books |
