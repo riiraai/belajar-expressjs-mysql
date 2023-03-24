@@ -9,4 +9,4 @@ Backend - Simple Crud Book with expressjs and mysql
 | 5.  | {url}/books/delete-book/:id | DELETE | Delete a book     | { id }                                                 | Status 200                |
 | 6.  | {url}/books/upload          | POST   | Upload Image Book | { image }                                              | Status 200, result        |
 
-> ℹ You can use this repository with ```Use Templates```
+> ℹ You can use this repository with ```Use This Templates```
