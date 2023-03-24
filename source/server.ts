@@ -8,6 +8,10 @@ import bookRoutes from './routes/book';
 const NAMESPACE = 'Server';
 const router = express();
 
+router.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
 /** Log the request */
 router.use((req, res, next) => {
     /** Log the req */

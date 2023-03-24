@@ -1,9 +1,43 @@
 import { NextFunction, Request, Response } from 'express';
+import multer from 'multer';
 import logging from '../config/logging';
 import { Connect, Query } from '../config/mysql';
 import { IBook } from '../interfaces/book';
 
 const NAMESPACE = 'Books';
+
+// Define storage for uploaded files
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './uploads/books');
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    }
+});
+
+// Create multer instance for file upload
+const uploadBooks = (req: Request, res: Response, next: NextFunction) => {
+    multer({ storage: storage }).single('image')(req, res, (err) => {
+        if (err) {
+            logging.error(NAMESPACE, err.message, err);
+
+            return res.status(200).json({
+                message: err.message,
+                error: err
+            });
+        } else {
+            logging.info(NAMESPACE, 'File uploaded successfully.');
+
+            return res.status(200).json({
+                code: 201,
+                success: true,
+                message: 'File uploaded successfully.',
+                data: req.file
+            });
+        }
+    });
+};
 
 function isValidData(data: IBook): boolean {
     if (data.author == undefined || data.title == undefined || data.tahun.diterbitkan == undefined || data.tahun.dibuat == undefined) {
@@ -122,18 +156,18 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
     logging.info(NAMESPACE, 'Creating book.');
 
-    const data: IBook = req.body;
+    const data = req.body;
 
-    if (!isValidData(data)) {
-        return res.status(200).json({
-            code: 400,
-            success: false,
-            message: 'Data yang anda masukkan tidak valid.',
-            data: []
-        });
-    }
+    // if (!isValidData(data)) {
+    //     return res.status(200).json({
+    //         code: 400,
+    //         success: false,
+    //         message: 'Data yang anda masukkan tidak valid.',
+    //         data: []
+    //     });
+    // }
 
-    let query = `INSERT INTO ${NAMESPACE} (author, title, tahun_dibuat, tahun_diterbitkan) VALUES ("${data.author}", "${data.title}", "${data.tahun.dibuat}", "${data.tahun.diterbitkan}")`;
+    let query = `INSERT INTO ${NAMESPACE} (author, title, tahun_dibuat, tahun_diterbitkan) VALUES ("${data.author}", "${data.title}", "${data.tahun_dibuat}", "${data.tahun_diterbitkan}")`;
 
     Connect()
         .then((connection) => {
@@ -213,4 +247,4 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-export default { createBook, getAllBooks, updateBook, showBook };
+export default { createBook, getAllBooks, updateBook, showBook, uploadBooks };
