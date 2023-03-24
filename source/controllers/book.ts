@@ -9,7 +9,7 @@ const NAMESPACE = 'Books';
 // Define storage for uploaded files
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, './uploads/books');
+        cb(null, 'public/uploads/books');
     },
     filename: (req, file, cb) => {
         cb(null, file.originalname);
@@ -54,6 +54,49 @@ function isValidData(data: IBook): boolean {
 
     return true;
 }
+
+const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
+    logging.info(NAMESPACE, 'Deleting book by id.');
+
+    const id = req.params.id;
+
+    let query = `DELETE FROM ${NAMESPACE} WHERE id = ${id}`;
+
+    Connect()
+        .then((connection) => {
+            Query(connection, query)
+                .then((results) => {
+                    logging.info(NAMESPACE, 'Book deleted: ', results);
+
+                    return res.status(200).json({
+                        code: 200,
+                        success: true,
+                        message: 'Berhasil Menghapus Buku.'
+                    });
+                })
+                .catch((error) => {
+                    logging.error(NAMESPACE, error.message, error);
+
+                    return res.status(200).json({
+                        message: error.message,
+                        error
+                    });
+                })
+                .finally(() => {
+                    logging.info(NAMESPACE, 'Closing connection.');
+
+                    connection.end();
+                });
+        })
+        .catch((error) => {
+            logging.error(NAMESPACE, error.message, error);
+
+            return res.status(200).json({
+                message: error.message,
+                error
+            });
+        });
+};
 
 const showBook = async (req: Request, res: Response, next: NextFunction) => {
     logging.info(NAMESPACE, 'Getting book by id.');
@@ -247,4 +290,4 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-export default { createBook, getAllBooks, updateBook, showBook, uploadBooks };
+export default { createBook, getAllBooks, updateBook, showBook, deleteBook, uploadBooks };

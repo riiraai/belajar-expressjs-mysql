@@ -2,10 +2,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// const MYSQL_HOST = process.env.MYSQL_HOST || 'localhost';
-// const MYSQL_DATABASE = process.env.MYSQL_DATABASE || 'portfolio';
-// const MYSQL_USER = process.env.MYSQL_HOST || 'root';
-// const MYSQL_PASS = process.env.MYSQL_HOST || '';
 const DB_HOST = process.env.DB_HOST;
 const DB_DATABASE = process.env.DB_DATABASE;
 const DB_USERNAME = process.env.DB_USERNAME;

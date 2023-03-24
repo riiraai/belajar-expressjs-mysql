@@ -9,7 +9,7 @@ const NAMESPACE = 'Server';
 const router = express();
 
 router.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile('index.html', { root: 'public' });
 });
 
 /** Log the request */
@@ -42,7 +42,10 @@ router.use((req, res, next) => {
     next();
 });
 
-/** Routes go here */
+/** router res send file from public folder */
+router.use(express.static('public'));
+
+/** All Routes API */
 router.use('/books', bookRoutes);
 
 /** Error handling */
